@@ -1,6 +1,6 @@
 /* Main container for the profile page */
 .profile-container {
-    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E);
+    background: linear-gradient(147deg, #6096fd, #fb7b8b);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -24,7 +24,6 @@
     font-size: 24px;
     margin-top: 30px;
     margin-bottom: 10px;
-    text-decoration: underline;
 }
 
 /* Description Text */

@@ -1,12 +1,14 @@
 /* Main container for the signup page */
 .signup-container {
-    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E);
+    background: linear-gradient(147deg, #6096fd, #fb7b8b);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #fff;
     font-family: 'Arial', sans-serif;
+    padding: 20px;
 }
 
 .signup-header {

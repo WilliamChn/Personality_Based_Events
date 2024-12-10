@@ -64,7 +64,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
 
     return (
         <div className="questionnaire-container">
-            <h2>Questionnaire</h2>
+            <h1>Questionnaire</h1>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
