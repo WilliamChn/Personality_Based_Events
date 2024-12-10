@@ -52,25 +52,72 @@ const ProfilePage = ({ personalityResult }) => {
         },
     };
 
-    // Determine cluster based on personality trait averages
-    const determineCluster = (result) => {
-        if (!result) return "Zen Socialite"; // Default fallback
+const determineCluster = (result) => {
+    if (!result) return "Zen Socialite"; // Default fallback
 
-        const {
-            Extraversion,
-            "Emotional Stability": EmotionalStability,
-            Agreeableness,
-            Conscientiousness,
-            Openness,
-        } = result;
-
-        // Example logic to determine the cluster (adjust as necessary)
-        if (Extraversion > 3 && Openness > 3.3) return "Harmonious Explorer";
-        if (Extraversion > 3) return "Dynamic Dreamer";
-        if (Conscientiousness > 3 && EmotionalStability > 3) return "Zen Socialite";
-        if (Conscientiousness > 3 && Agreeableness > 3) return "Chill Optimizer";
-        return "Grounded Visionary";
+    // Predefined cluster values
+    const clusterValues = {
+        "Zen Socialite": {
+            Extraversion: 2.95,
+            "Emotional Stability": 2.99,
+            Agreeableness: 3.00,
+            Conscientiousness: 2.91,
+            Openness: 2.85,
+        },
+        "Chill Optimizer": {
+            Extraversion: 3.09,
+            "Emotional Stability": 2.48,
+            Agreeableness: 3.20,
+            Conscientiousness: 3.19,
+            Openness: 3.31,
+        },
+        "Dynamic Dreamer": {
+            Extraversion: 3.60,
+            "Emotional Stability": 3.31,
+            Agreeableness: 3.30,
+            Conscientiousness: 3.18,
+            Openness: 3.37,
+        },
+        "Grounded Visionary": {
+            Extraversion: 2.97,
+            "Emotional Stability": 2.77,
+            Agreeableness: 2.92,
+            Conscientiousness: 3.10,
+            Openness: 3.40,
+        },
+        "Harmonious Explorer": {
+            Extraversion: 3.00,
+            "Emotional Stability": 3.55,
+            Agreeableness: 3.22,
+            Conscientiousness: 3.23,
+            Openness: 3.33,
+        },
     };
+
+    // Calculate Euclidean distance for each cluster
+    const distances = Object.entries(clusterValues).map(([cluster, values]) => {
+        const distance = Math.sqrt(
+            Object.keys(values).reduce((sum, key) => {
+                const diff = result[key] - values[key];
+                return sum + diff * diff;
+            }, 0)
+        );
+        return { cluster, distance };
+    });
+
+    // Log the distances for debugging
+    console.log("Distances to each cluster:", distances);
+
+    // Find the cluster with the smallest distance
+    const closestCluster = distances.reduce((prev, curr) =>
+        prev.distance < curr.distance ? prev : curr
+    );
+
+    console.log("Closest cluster:", closestCluster.cluster);
+    return closestCluster.cluster;
+};
+
+
 
     const cluster = determineCluster(personalityResult);
     const clusterDetails = personalityClusters[cluster];
