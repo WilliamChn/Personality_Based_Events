@@ -1,94 +1,99 @@
-import React, { useState } from 'react';
-import './questionnaire.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./questionnaire.css";
 
-const Questionnaire = () => {
+const Questionnaire = ({ setPersonalityResult }) => {
     const [responses, setResponses] = useState({});
+    const navigate = useNavigate();
 
-    const questions = [
-        {
-            category: "Extraversion", questions: [
-                "I enjoy meeting new people and building connections.",
-                "I feel energized after spending time with groups of people.",
-                "I am comfortable initiating conversations with others."
-            ]
-        },
-        {
-            category: "Emotional Stability", questions: [
-                "I remain calm and composed under stressful situations.",
-                "I rarely feel overwhelmed by unexpected challenges.",
-                "I am good at managing my emotions when things don't go as planned."
-            ]
-        },
-        {
-            category: "Agreeableness", questions: [
-                "I find it easy to get along with people who have different opinions.",
-                "I enjoy helping others and making them feel comfortable.",
-                "I try to avoid arguments and disagreements."
-            ]
-        },
-        {
-            category: "Conscientiousness", questions: [
-                "I am very organized in my daily activities and tasks.",
-                "I always meet deadlines for tasks or assignments.",
-                "I pay close attention to detail in my work."
-            ]
-        },
-        {
-            category: "Openness to Experience", questions: [
-                "I enjoy trying new activities or exploring unfamiliar topics.",
-                "I like to think about abstract or complex ideas.",
-                "I am open to learning and experiencing new cultures or lifestyles."
-            ]
-        }
-    ];
+    const questions = {
+        Extraversion: [
+            "I enjoy meeting new people and building connections.",
+            "I feel energized after spending time with groups of people.",
+            "I am comfortable initiating conversations with others.",
+        ],
+        "Emotional Stability": [
+            "I remain calm and composed under stressful situations.",
+            "I rarely feel overwhelmed by unexpected challenges.",
+            "I am good at managing my emotions when things don't go as planned.",
+        ],
+        Agreeableness: [
+            "I find it easy to get along with people who have different opinions.",
+            "I enjoy helping others and making them feel comfortable.",
+            "I try to avoid arguments and disagreements.",
+        ],
+        Conscientiousness: [
+            "I am very organized in my daily activities and tasks.",
+            "I always meet deadlines for tasks or assignments.",
+            "I pay close attention to detail in my work.",
+        ],
+        Openness: [
+            "I enjoy trying new activities or exploring unfamiliar topics.",
+            "I like to think about abstract or complex ideas.",
+            "I am open to learning and experiencing new cultures or lifestyles.",
+        ],
+    };
 
-    const handleClick = (category, index, value) => {
+    const handleSelect = (trait, questionIndex, value) => {
         setResponses({
             ...responses,
-            [`${category}-${index}`]: value,
+            [`${trait}-${questionIndex}`]: parseInt(value),
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("User Responses:", responses);
-        alert("Questionnaire submitted successfully!");
+    const calculateResults = () => {
+        const results = {};
+        for (let trait in questions) {
+            const traitResponses = Object.values(responses).filter((_, index) =>
+                index.toString().startsWith(trait)
+            );
+            const average =
+                traitResponses.reduce((sum, val) => sum + val, 0) /
+                questions[trait].length;
+            results[trait] = average;
+        }
+        setPersonalityResult(results);
+        navigate("/profile");
     };
 
     return (
         <div className="questionnaire-container">
-            <div className="questionnaire-header">
-                <h2>Hello User.</h2>
-                <p>Please fill out this survey. Please select answers for each question with 1 being very inaccurate and 5 being very accurate.</p>
-            </div>
-            <form onSubmit={handleSubmit} className="questionnaire-form">
-                {questions.map((section, sectionIndex) => (
-                    <div key={sectionIndex} className="question-category">
-                        <h3>{section.category}</h3>
-                        {section.questions.map((question, questionIndex) => (
-                            <div key={questionIndex} className="form-group">
+            <h2>Questionnaire</h2>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    calculateResults();
+                }}
+                className="questionnaire-form"
+            >
+                {Object.keys(questions).map((trait) => (
+                    <div key={trait} className="trait-section">
+                        <h3>{trait}</h3>
+                        {questions[trait].map((question, index) => (
+                            <div key={index} className="form-group">
                                 <label>{question}</label>
                                 <div className="rating-boxes">
                                     {[1, 2, 3, 4, 5].map((value) => (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={value}
-                                            className={`rating-box ${responses[`${section.category}-${questionIndex}`] === value
-                                                ? "selected"
-                                                : ""
+                                            className={`rating-box ${responses[`${trait}-${index}`] === value
+                                                    ? "selected"
+                                                    : ""
                                                 }`}
-                                            onClick={() =>
-                                                handleClick(section.category, questionIndex, value)
-                                            }
+                                            onClick={() => handleSelect(trait, index, value)}
                                         >
                                             {value}
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
                         ))}
                     </div>
                 ))}
-                <button type="submit" className="questionnaire-submit-btn">Submit</button>
+                <button type="submit" className="questionnaire-submit-btn">
+                    Submit
+                </button>
             </form>
         </div>
     );

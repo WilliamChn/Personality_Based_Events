@@ -10,22 +10,6 @@
     padding: 20px;
 }
 
-/* Header section */
-.questionnaire-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.questionnaire-header h2 {
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-
-.questionnaire-header p {
-    font-size: 16px;
-    line-height: 1.5;
-}
-
 /* Form styling */
 .questionnaire-form {
     background: rgba(255, 255, 255, 0.1);
@@ -36,16 +20,19 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.question-category {
+/* Trait Section Styling */
+.trait-section {
     margin-bottom: 30px;
 }
 
-.question-category h3 {
+.trait-section h3 {
     font-size: 24px;
     margin-bottom: 20px;
     color: #FFF;
+    text-decoration: underline;
 }
 
+/* Question Group Styling */
 .form-group {
     margin-bottom: 20px;
 }
@@ -53,11 +40,13 @@
 .form-group label {
     display: block;
     margin-bottom: 8px;
+    font-size: 16px;
     font-weight: bold;
     color: #FFF;
     text-align: center;
 }
 
+/* Rating Boxes */
 .rating-boxes {
     display: flex;
     gap: 20px;
@@ -89,7 +78,7 @@
     border-color: #ffffff;
 }
 
-/* Submit button */
+/* Submit Button */
 .questionnaire-submit-btn {
     background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
     color: white;
@@ -104,21 +93,23 @@
     text-align: center;
     transition: background 0.3s ease;
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 .questionnaire-submit-btn:hover {
     background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
 }
 
-/* Responsive form */
+/* Responsive Design */
 @media screen and (max-width: 768px) {
-    .questionnaire-form {
-        padding: 20px;
-    }
-
     .rating-box {
         width: 30px;
         height: 30px;
+    }
+
+    .questionnaire-submit-btn {
+        font-size: 14px;
+        height: 40px;
+        width: 120px;
     }
 }

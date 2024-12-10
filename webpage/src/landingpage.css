@@ -1,0 +1,49 @@
+/* Main container for the landing page */
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E);
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Title styling */
+.landing-title {
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Button styling */
+.landing-button {
+    background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.landing-button:hover {
+    background: linear-gradient(135deg, #7F00FF, #B832FA, #00CFFD, #001AFF);
+    transform: scale(1.05);
+}
+
+/* Responsive design for smaller screens */
+@media screen and (max-width: 768px) {
+    .landing-title {
+        font-size: 36px;
+    }
+
+    .landing-button {
+        font-size: 16px;
+        padding: 12px 25px;
+    }
+}

@@ -1,0 +1,65 @@
+/* Main container for the profile page */
+.profile-container {
+    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Profile Title */
+.profile-container h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Section Headers */
+.profile-container h3 {
+    font-size: 24px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+
+/* Description Text */
+.profile-container p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+/* Strategy List */
+.profile-container ul {
+    list-style-type: disc;
+    padding: 0;
+    margin: 20px 0;
+    text-align: left;
+    max-width: 600px;
+}
+
+.profile-container ul li {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #FFF;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .profile-container h1 {
+        font-size: 28px;
+    }
+
+    .profile-container h3 {
+        font-size: 20px;
+    }
+
+    .profile-container p {
+        font-size: 16px;
+    }
+}
