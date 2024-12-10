@@ -44,17 +44,23 @@ const Questionnaire = ({ setPersonalityResult }) => {
     const calculateResults = () => {
         const results = {};
         for (let trait in questions) {
-            const traitResponses = Object.values(responses).filter((_, index) =>
-                index.toString().startsWith(trait)
-            );
+            // Collect all responses for the current trait
+            const traitResponses = Object.keys(responses)
+                .filter((key) => key.startsWith(trait)) // Match keys that start with the current trait
+                .map((key) => responses[key]); // Map the values (user-selected scores)
+
+            // Calculate the average for the trait
             const average =
                 traitResponses.reduce((sum, val) => sum + val, 0) /
                 questions[trait].length;
+
             results[trait] = average;
         }
         setPersonalityResult(results);
+        console.log("Calculated Results:", results); // Debugging
         navigate("/profile");
     };
+
 
     return (
         <div className="questionnaire-container">
