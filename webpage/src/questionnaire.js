@@ -41,15 +41,13 @@ const Questionnaire = ({ setPersonalityResult }) => {
         });
     };
 
-    const calculateResults = () => {
+    const calculateResults = async () => {
         const results = {};
         for (let trait in questions) {
-            // Collect all responses for the current trait
             const traitResponses = Object.keys(responses)
-                .filter((key) => key.startsWith(trait)) // Match keys that start with the current trait
-                .map((key) => responses[key]); // Map the values (user-selected scores)
+                .filter((key) => key.startsWith(trait))
+                .map((key) => responses[key]);
 
-            // Calculate the average for the trait
             const average =
                 traitResponses.reduce((sum, val) => sum + val, 0) /
                 questions[trait].length;
@@ -57,10 +55,28 @@ const Questionnaire = ({ setPersonalityResult }) => {
             results[trait] = average;
         }
         setPersonalityResult(results);
-        console.log("Calculated Results:", results); // Debugging
+
+        // Send results to backend
+        try {
+            const res = await fetch("http://localhost:5001/api/save-results", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(results),
+            });
+
+            if (res.ok) {
+                console.log("Results saved to CSV successfully!");
+            } else {
+                console.error("Failed to save results to backend.");
+            }
+        } catch (error) {
+            console.error("Error saving results:", error);
+        }
+
         navigate("/profile");
     };
-
 
     return (
         <div className="questionnaire-container">
@@ -83,10 +99,11 @@ const Questionnaire = ({ setPersonalityResult }) => {
                                         <button
                                             type="button"
                                             key={value}
-                                            className={`rating-box ${responses[`${trait}-${index}`] === value
+                                            className={`rating-box ${
+                                                responses[`${trait}-${index}`] === value
                                                     ? "selected"
                                                     : ""
-                                                }`}
+                                            }`}
                                             onClick={() => handleSelect(trait, index, value)}
                                         >
                                             {value}
