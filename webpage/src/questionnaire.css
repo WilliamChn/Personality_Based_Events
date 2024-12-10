@@ -1,6 +1,6 @@
 /* Main container for the questionnaire page */
 .questionnaire-container {
-    background: linear-gradient(to right, #FCC188, #7042D2, #2E008E);
+    background: linear-gradient(147deg, #6096fd, #fb7b8b);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -55,11 +55,13 @@
     margin-bottom: 8px;
     font-weight: bold;
     color: #FFF;
+    text-align: center;
 }
 
 .rating-boxes {
     display: flex;
-    gap: 10px;
+    gap: 20px;
+    justify-content: center;
 }
 
 .rating-box {
@@ -82,9 +84,9 @@
 }
 
 .rating-box.selected {
-    background: rgba(255, 255, 255, 0.8);
-    color: #000;
-    border-color: #000;
+    background: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    border-color: #ffffff;
 }
 
 /* Submit button */
