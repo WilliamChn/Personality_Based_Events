@@ -33,13 +33,14 @@ const Questionnaire = ({ setPersonalityResult }) => {
             "I am open to learning and experiencing new cultures or lifestyles.",
         ],
     };
-
     const handleSelect = (trait, questionIndex, value) => {
-        setResponses({
-            ...responses,
-            [`${trait}-${questionIndex}`]: parseInt(value),
+        setResponses((prev) => {
+            const updated = { ...prev, [`${trait}-${questionIndex}`]: parseInt(value) };
+            console.log("Updated responses:", updated);
+            return updated;
         });
     };
+    
 
     const calculateResults = async () => {
         const results = {};
