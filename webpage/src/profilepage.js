@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./profilepage.css";
 
-const ProfilePage = ({ personalityResult }) => {
+const ProfilePage = ({ personalityResult, setUserCluster }) => {
+    const navigate = useNavigate();
     const personalityClusters = {
         "Zen Socialite": {
             traits: "Balanced, friendly, organized, moderately open.",
@@ -122,6 +124,12 @@ const determineCluster = (result) => {
     const cluster = determineCluster(personalityResult);
     const clusterDetails = personalityClusters[cluster];
 
+    // Pass cluster to App.js and navigate to MatchPage
+    const handleFindMatchClick = () => {
+        setUserCluster(cluster);
+        navigate("/match");
+    };
+
     if (!clusterDetails) {
         return (
             <div className="profile-container">
@@ -144,6 +152,9 @@ const determineCluster = (result) => {
                     <li key={index}>{s}</li>
                 ))}
             </ul>
+            <button className="find-match-button" onClick={handleFindMatchClick}>
+                Find your match!
+            </button>
         </div>
     );
 };
