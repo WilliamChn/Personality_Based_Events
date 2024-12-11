@@ -4,9 +4,11 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     color: #fff;
     font-family: 'Arial', sans-serif;
+    text-align: center;
     padding: 20px;
 }
 

@@ -129,8 +129,6 @@ const determineCluster = (result) => {
     return closestCluster.cluster;
 };
 
-
-
     const cluster = determineCluster(personalityResult);
     const clusterDetails = personalityClusters[cluster];
 
