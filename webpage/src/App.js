@@ -6,6 +6,7 @@ import Questionnaire from './questionnaire';
 import LandingPage from './landingpage';
 import ProfilePage from './profilepage';
 import MatchPage from './matchpage';
+import SelectedProfilePage from './SelectedProfilePage'; // New component for individual profiles
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/questionnaire" element={<Questionnaire setPersonalityResult={setPersonalityResult} />} />
         <Route path="/profile" element={<ProfilePage personalityResult={personalityResult} setUserCluster={setUserCluster} />} />
         <Route path="/match" element={<MatchPage userCluster={userCluster} />} />
+        <Route path="/profile/:name" element={<SelectedProfilePage />} /> {/* New route */}
       </Routes>
     </HashRouter>
   );
