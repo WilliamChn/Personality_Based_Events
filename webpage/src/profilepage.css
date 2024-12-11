@@ -47,6 +47,11 @@
     color: #FFF;
 }
 
+.profile-container img {
+    border-radius: 5px;
+    width: 250px;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     .profile-container h1 {

@@ -6,7 +6,6 @@ const LandingPage = () => {
 
     const navigate = useNavigate();
     const handleButtonClick = () => {
-        alert("Redirecting to find your match!");
         navigate("/signup");
     };
 

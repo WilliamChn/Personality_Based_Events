@@ -87,8 +87,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
                     e.preventDefault();
                     calculateResults();
                 }}
-                className="questionnaire-form"
-            >
+                className="questionnaire-form">
                 {Object.keys(questions).map((trait) => (
                     <div key={trait} className="trait-section">
                         <h3>{trait}</h3>

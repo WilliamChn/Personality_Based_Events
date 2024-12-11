@@ -1,11 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./profilepage.css";
+import optimizer from "./images/chill_optimizer.webp";
+import dreamer from "./images/dynamic_dreamer.webp";
+import visionary from "./images/grounded_visionary.png";
+import explorer from "./images/harmonious_explorer.webp";
+import socialite from "./images/zen_socialite.webp";
 
 const ProfilePage = ({ personalityResult, setUserCluster }) => {
     const navigate = useNavigate();
     const personalityClusters = {
         "Zen Socialite": {
+            image: socialite,
             traits: "Balanced, friendly, organized, moderately open.",
             description:
                 "These individuals value organization and enjoy socializing in moderation. They're great at finding balance in relationships and responsibilities.",
@@ -15,6 +21,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
             ],
         },
         "Chill Optimizer": {
+            image: optimizer,
             traits:
                 "Practical, slightly outgoing, kind but independent, detail-oriented.",
             description:
@@ -25,6 +32,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
             ],
         },
         "Dynamic Dreamer": {
+            image: dreamer,
             traits: "Energetic, resilient, empathetic, reliable, imaginative.",
             description:
                 "The life of the party and the dreamer of the group, these individuals bring energy and imagination. They're the ones who suggest wild ideas and actually follow through.",
@@ -34,6 +42,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
             ],
         },
         "Grounded Visionary": {
+            image: visionary,
             traits: "Calm, easygoing, methodical, moderately creative.",
             description:
                 "Quiet but curious, these individuals value structure but have an artistic streak. They’re the roommate who keeps things grounded while doodling masterpieces.",
@@ -43,6 +52,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
             ],
         },
         "Harmonious Explorer": {
+            image: explorer,
             traits:
                 "Outgoing, emotionally stable, highly cooperative, meticulous, adventurous.",
             description:
@@ -142,6 +152,7 @@ const determineCluster = (result) => {
     return (
         <div className="profile-container">
             <h1>Your Personality Cluster: {cluster}</h1>
+            <img src={clusterDetails.image} alt="Personality" />
             <h3>Key Traits</h3>
             <p>{clusterDetails.traits}</p>
             <h3>Description</h3>
