@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css'; // Signup CSS file
 
-const SignupPage = () => {
+const SignupPage = ({ setUserData }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         username: '',
         email: '',
         gender: '',
-        personalityType: '',
+        bio: '',
         interests: '',
     });
 
@@ -23,7 +23,14 @@ const SignupPage = () => {
     const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
+        const userData = {
+            name: `${formData.firstName} ${formData.lastName}`,
+            bio: formData.bio,
+            interests: formData.interests.split(',').map((interest) => interest.trim()),
+        };
         console.log("Form submitted:", formData);
+        setUserData(userData); // Called during form submission
+        console.log("User Data in SignupPage:", userData);
         alert("Signup successful!");
         navigate("/questionnaire");
     };
@@ -88,6 +95,17 @@ const SignupPage = () => {
                         <option value="female">Female</option>
                         <option value="nonbinary">Non-binary</option>
                     </select>
+                </div>
+
+                <div className="form-group">
+                    <label>Bio</label>
+                    <textarea
+                        name="bio"
+                        placeholder="Write a bio about yourself"
+                        value={formData.bio}
+                        onChange={handleChange}
+                        rows="4"
+                    />
                 </div>
 
                 <div className="form-group">
