@@ -105,77 +105,80 @@ const profiles = [
     { id: 100, name: "Austin Taylor", personality: "Grounded Visionary", bio: "Music lover who plays guitar.", interests: ["Music", "Fitness", "Art"] }
 ];
 
-const MatchPage = ({ userCluster, userProfile }) => {
-    const navigate = useNavigate();
-    console.log("User Profile in MatchPage:", userProfile);
-
-    return (
-        <div className="match-container">
-            <h1>Explore Profiles</h1>
-            <p>Your Cluster: <strong>{userCluster}</strong></p>
-            <div className="profiles-container">
-                {profiles.map((profile) => (
-                    <div
-                        key={profile.id}
-                        className="profile-card"
-                        onClick={() =>
-                            navigate(`/profile/${profile.name}`, {
-                                state: { userProfile, matchedProfile: profile },
-                            })
-                        }
-                    >
-                        <h3>{profile.name}</h3>
-                        <p><strong>Personality:</strong> {profile.personality}</p>
-                        <p><strong>Bio:</strong> {profile.bio}</p>
-                        <p><strong>Interests:</strong> {profile.interests.join(", ")}</p>
-                        {profile.personality === userCluster && (
-                            <div className="recommended">Recommended for You</div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-export default MatchPage;
-
-// const MatchPage = ({ userCluster }) => {
+// const MatchPage = ({ userCluster, userProfile }) => {
 //     const navigate = useNavigate();
-//     const [hoveredProfile, setHoveredProfile] = useState(null);
-
-//     const filteredProfiles = profiles.filter(profile => profile.personality === userCluster);
+//     console.log("User Profile in MatchPage:", userProfile);
 
 //     return (
 //         <div className="match-container">
-//             <h1>Find Your Match</h1>
+//             <h1>Explore Profiles</h1>
 //             <p>Your Cluster: <strong>{userCluster}</strong></p>
 //             <div className="profiles-container">
-//                 {filteredProfiles.map(profile => (
+//                 {profiles.map((profile) => (
 //                     <div
 //                         key={profile.id}
 //                         className="profile-card"
-//                         onClick={() => navigate(`/profile/${profile.name}`)} // Navigate to the profile's page
-//                         onMouseEnter={() => setHoveredProfile(profile)} // Set hovered profile
-//                         onMouseLeave={() => setHoveredProfile(null)} // Clear hovered profile
-//                         style={{ cursor: "pointer" }}
+//                         onClick={() =>
+//                             navigate(`/profile/${profile.name}`, {
+//                                 state: { userProfile, matchedProfile: profile },
+//                             })
+//                         }
 //                     >
 //                         <h3>{profile.name}</h3>
-//                         <p>{profile.personality}</p>
-//                         {hoveredProfile === profile && (
-//                             <div className="hover-card">
-//                                 <p><strong>Bio:</strong> {profile.bio}</p>
-//                                 <p><strong>Interests:</strong> {profile.interests.join(", ")}</p>
-//                             </div>
+//                         <p><strong>Personality:</strong> {profile.personality}</p>
+//                         <p><strong>Bio:</strong> {profile.bio}</p>
+//                         <p><strong>Interests:</strong> {profile.interests.join(", ")}</p>
+//                         {profile.personality === userCluster && (
+//                             <div className="recommended">Recommended for You</div>
 //                         )}
 //                     </div>
 //                 ))}
-//                 {filteredProfiles.length === 0 && (
-//                     <p>No matches available for your cluster at the moment.</p>
-//                 )}
 //             </div>
 //         </div>
 //     );
 // };
 
 // export default MatchPage;
+
+const MatchPage = ({ userCluster, userProfile }) => {
+    const navigate = useNavigate();
+    const [hoveredProfile, setHoveredProfile] = useState(null);
+
+    const filteredProfiles = profiles.filter(profile => profile.personality === userCluster);
+
+    return (
+        <div className="match-container">
+            <h1>Find Your Match</h1>
+            <p>Your Cluster: <strong>{userCluster}</strong></p>
+            <div className="profiles-container">
+                {profiles.map(profile => (
+                    <div
+                        key={profile.id}
+                        className="profile-card"
+                        onClick={() => navigate(`/profile/${profile.name}`, {state: { userProfile, matchedProfile: profile}, })} // Navigate to the profile's page
+                        onMouseEnter={() => setHoveredProfile(profile)} // Set hovered profile
+                        onMouseLeave={() => setHoveredProfile(null)} // Clear hovered profile
+                        style={{ cursor: "pointer" }}
+                    >
+                        <h3>{profile.name}</h3>
+                        <p>{profile.personality}</p>
+                        {hoveredProfile === profile && (
+                            <div className="hover-card">
+                                <p><strong>Bio:</strong> {profile.bio}</p>
+                                <p><strong>Interests:</strong> {profile.interests.join(", ")}</p>
+                            </div>
+                        )}
+                        {profile.personality === userCluster && (
+                            <div className="recommended">Recommended for You</div>
+                        )}
+                    </div>
+                ))}
+                {filteredProfiles.length === 0 && (
+                    <p>No matches available for your cluster at the moment.</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default MatchPage;

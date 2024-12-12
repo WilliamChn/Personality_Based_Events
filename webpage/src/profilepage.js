@@ -149,21 +149,25 @@ const determineCluster = (result) => {
 
     return (
         <div className="profile-container">
-            <h1>Your Personality Cluster: {cluster}</h1>
-            <img src={clusterDetails.image} alt="Personality" />
-            <h3>Key Traits</h3>
-            <p>{clusterDetails.traits}</p>
-            <h3>Description</h3>
-            <p>{clusterDetails.description}</p>
-            <h3>Conflict Resolution Strategies</h3>
-            <ul>
-                {clusterDetails.strategy.map((s, index) => (
-                    <li key={index}>{s}</li>
-                ))}
-            </ul>
-            <button className="find-match-button" onClick={handleFindMatchClick}>
-                Find your match!
-            </button>
+            <div>
+                <h1>Your Personality Cluster: {cluster}</h1>
+                <img src={clusterDetails.image} alt="Personality" />
+            </div>
+            <div>
+                <h3>Key Traits</h3>
+                <p>{clusterDetails.traits}</p>
+                <h3>Description</h3>
+                <p>{clusterDetails.description}</p>
+                <h3>Conflict Resolution Strategies</h3>
+                <ul>
+                    {clusterDetails.strategy.map((s, index) => (
+                        <li key={index}>{s}</li>
+                    ))}
+                </ul>
+                <button className="find-match-button" onClick={handleFindMatchClick}>
+                    Find your match!
+                </button>
+            </div>
         </div>
     );
 };

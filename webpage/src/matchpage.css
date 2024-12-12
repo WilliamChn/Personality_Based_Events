@@ -11,12 +11,6 @@
     text-align: center;
 }
 
-/* Title */
-.match-container h1 {
-    font-size: 36px;
-    margin-bottom: 10px;
-}
-
 /* Profiles container */
 .profiles-container {
     display: flex;
@@ -60,7 +54,7 @@
 /* Hover card for bio and interests */
 .hover-card {
     position: absolute;
-    bottom: 140px; 
+    bottom: 142px; 
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.8); /* solid black, fully opaque */

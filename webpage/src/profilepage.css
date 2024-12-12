@@ -1,14 +1,15 @@
 /* Main container for the profile page */
 .profile-container {
+    container-type: inline-size;
     background: linear-gradient(147deg, #6096fd, #fb7b8b);
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #fff;
     text-align: center;
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* Profile Title */
@@ -38,7 +39,6 @@
     list-style-type: disc;
     padding: 0;
     margin: 20px 0;
-    text-align: left;
     max-width: 600px;
 }
 
