@@ -50,21 +50,11 @@ app.post("/api/save-results", (req, res) => {
     fs.appendFileSync(csvFilePath, line);
     console.log("Results saved to CSV successfully!");
 
-    // Determine resolution strategy based on sentiment
-    let resolutionStrategy;
-    if (sentimentScores.compound > 0.5) {
-        resolutionStrategy = "Focus on collaboration and shared goals to build a harmonious relationship.";
-    } else if (sentimentScores.compound < -0.5) {
-        resolutionStrategy = "Encourage open communication and set clear boundaries to resolve conflicts.";
-    } else {
-        resolutionStrategy = "Maintain consistent and clear communication to avoid misunderstandings.";
-    }
-    console.log("Selected resolution strategy:", resolutionStrategy);
-
+    let resolutionStrategy = "Maintain consistent and clear communication.";
     // Send response to frontend
     res.status(200).send({
         message: "Results saved successfully",
-        sentiment: sentimentScores,
+        sentimentScores: sentimentScores,
         resolutionStrategy: resolutionStrategy,
     });
 });
@@ -91,18 +81,28 @@ app.get("/api/get-results", (req, res) => {
             Openness: parseFloat(lastRow[4]),
         };
 
-        const sentiment = { compound: parseFloat(lastRow[5]) };
+        const sentimentScores = { compound: parseFloat(lastRow[5]) };
 
         let resolutionStrategy = "Maintain consistent and clear communication.";
-        if (sentiment.compound > 0.30) {
-            resolutionStrategy = "Focus on collaboration and shared goals.";
-        } else if (sentiment.compound < -0.30) {
-            resolutionStrategy = "Encourage open communication and set clear boundaries.";
+        if (sentimentScores.compound > 0.8) {
+            resolutionStrategy = "Your positive energy is contagious! Focus on building meaningful connections and shared goals to create a harmonious living space.";
+        } else if (sentimentScores.compound > 0.5) {
+            resolutionStrategy = "You have a positive outlook! Maintain collaboration and find shared activities to keep the relationship balanced and enjoyable.";
+        } else if (sentimentScores.compound > 0.3) {
+            resolutionStrategy = "You seem optimistic with some reservations. Encourage open communication while identifying opportunities for collaboration.";
+        } else if (sentimentScores.compound >= -0.3) {
+            resolutionStrategy = "Your response is balanced. Set clear expectations and maintain consistent, respectful communication to avoid misunderstandings.";
+        } else if (sentimentScores.compound >= -0.5) {
+            resolutionStrategy = "You may have specific concerns. Address any uncertainties with open communication and establish firm boundaries.";
+        } else if (sentimentScores.compound >= -0.8) {
+            resolutionStrategy = "It seems you may have some frustrations or concerns. Discuss expectations openly and consider compromises to create a healthier environment.";
+        } else {
+            resolutionStrategy = "Significant challenges or concerns are indicated. Prioritize addressing key issues directly and focus on establishing mutual understanding.";
         }
 
         res.json({
             adjustedScores,
-            sentiment,
+            sentimentScores,
             resolutionStrategy,
         });
     });

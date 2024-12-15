@@ -21,7 +21,7 @@ const SelectedProfilePage = () => {
             .then((data) => {
                 console.log("Received data from backend:", data); // Debugging
                 setResolutionStrategy(data.resolutionStrategy);
-                setSentiment(data.sentiment);
+                setSentiment(data.sentimentScores);
             })
             .catch((error) => {
                 console.error("Error fetching resolution strategy:", error);
