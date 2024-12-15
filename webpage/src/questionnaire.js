@@ -33,6 +33,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
             "I am open to learning and experiencing new cultures or lifestyles.",
         ],
     };
+
     const handleSelect = (trait, questionIndex, value) => {
         setResponses((prev) => {
             const updated = { ...prev, [`${trait}-${questionIndex}`]: parseInt(value) };
@@ -40,7 +41,6 @@ const Questionnaire = ({ setPersonalityResult }) => {
             return updated;
         });
     };
-    
 
     const calculateResults = async () => {
         const results = {};
@@ -50,12 +50,15 @@ const Questionnaire = ({ setPersonalityResult }) => {
                 .map((key) => responses[key]);
 
             const average =
-                traitResponses.reduce((sum, val) => sum + val, 0) /
-                questions[trait].length;
+                traitResponses.reduce((sum, val) => sum + val, 0) / questions[trait].length;
 
             results[trait] = average;
         }
+        results.openEnded = responses.openEnded; // Include open-ended response
         setPersonalityResult(results);
+
+        // Debugging
+        console.log("Final Results:", JSON.stringify(results));
 
         // Send results to backend
         try {
@@ -114,6 +117,16 @@ const Questionnaire = ({ setPersonalityResult }) => {
                         ))}
                     </div>
                 ))}
+                <div className="form-group">
+                    <label>Tell us about your ideal roommate or living preferences:</label>
+                    <textarea
+                        placeholder="Write your response here..."
+                        className="feedback-input"
+                        onChange={(e) =>
+                            setResponses((prev) => ({ ...prev, openEnded: e.target.value }))
+                        }
+                    />
+                </div>
                 <button type="submit" className="questionnaire-submit-btn">
                     Submit
                 </button>

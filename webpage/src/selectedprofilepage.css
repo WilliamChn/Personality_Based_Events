@@ -48,3 +48,30 @@ h1 {
     width: 100px;
     height: auto;
 }
+
+/* Resolution Strategy Section */
+.resolution-strategy {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.resolution-strategy h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #FFF;
+}
+
+.resolution-strategy p {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #FFF;
+}
+
+.resolution-strategy .sentiment-score {
+    font-weight: bold;
+    color: #FFD700;
+}
