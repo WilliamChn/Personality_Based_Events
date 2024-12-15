@@ -149,11 +149,11 @@ const determineCluster = (result) => {
 
     return (
         <div className="profile-container">
-            <div>
+            <div className="leftside">
                 <h1>Your Personality Cluster: {cluster}</h1>
                 <img src={clusterDetails.image} alt="Personality" />
             </div>
-            <div>
+            <div className="rightside">
                 <h3>Key Traits</h3>
                 <p>{clusterDetails.traits}</p>
                 <h3>Description</h3>

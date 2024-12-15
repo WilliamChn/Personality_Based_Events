@@ -117,6 +117,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
                         ))}
                     </div>
                 ))}
+                <hr class="solid"></hr>
                 <div className="form-group">
                     <label>Tell us about your ideal roommate or living preferences:</label>
                     <textarea
