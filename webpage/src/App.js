@@ -6,7 +6,7 @@ import Questionnaire from './questionnaire';
 import LandingPage from './landingpage';
 import ProfilePage from './profilepage';
 import MatchPage from './matchpage';
-import SelectedProfilePage from './selectedprofilepage'; // New component for individual profiles
+import SelectedProfilePage from './SelectedProfilePage'; // New component for individual profiles
 import './App.css';
 
 function App() {
