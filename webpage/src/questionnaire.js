@@ -62,7 +62,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
 
         // Send results to backend
         try {
-            const res = await fetch("http://localhost:5001/api/save-results", {
+            const res = await fetch("https://pbrm-backend.onrender.com/api/save-results", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
