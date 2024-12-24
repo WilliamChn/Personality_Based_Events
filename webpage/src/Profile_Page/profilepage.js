@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./profilepage.css";
-import optimizer from "./images/chill_optimizer.webp";
-import dreamer from "./images/dynamic_dreamer.webp";
-import visionary from "./images/grounded_visionary.png";
-import explorer from "./images/harmonious_explorer.webp";
-import socialite from "./images/zen_socialite.webp";
+import optimizer from "../images/chill_optimizer.webp";
+import dreamer from "../images/dynamic_dreamer.webp";
+import visionary from "../images/grounded_visionary.png";
+import explorer from "../images/harmonious_explorer.webp";
+import socialite from "../images/zen_socialite.webp";
 
 const ProfilePage = ({ personalityResult, setUserCluster }) => {
     const navigate = useNavigate();

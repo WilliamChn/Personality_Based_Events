@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { supabase } from '../supabase'; // Import your Supabase client
 import { useNavigate } from 'react-router-dom';
-import './signup.css'; // Signup CSS file
+import './signup.css';
 
 const SignupPage = ({ setUserData }) => {
     const [formData, setFormData] = useState({
@@ -8,10 +9,13 @@ const SignupPage = ({ setUserData }) => {
         lastName: '',
         username: '',
         email: '',
+        password: '',
         gender: '',
         bio: '',
         interests: '',
     });
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,19 +24,47 @@ const SignupPage = ({ setUserData }) => {
             [name]: value,
         });
     };
-    const navigate = useNavigate();
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = {
-            name: `${formData.firstName} ${formData.lastName}`,
-            bio: formData.bio,
-            interests: formData.interests.split(',').map((interest) => interest.trim()),
-        };
-        console.log("Form submitted:", formData);
-        setUserData(userData); // Called during form submission
-        console.log("User Data in SignupPage:", userData);
-        alert("Signup successful!");
-        navigate("/questionnaire");
+        const { firstName, lastName, username, email, password, gender, bio, interests } = formData;
+
+        try {
+            // Sign up user in Supabase Authentication
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            // Insert user data into the 'users' table
+            const { error: insertError } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        email,
+                        password, // WARNING: Avoid storing plaintext passwords in production
+                        created_at: new Date(),
+                        username,
+
+                    },
+                ]);
+
+            if (insertError) {
+                throw insertError;
+            }
+
+            // Save user data locally and navigate
+            setUserData({ email, firstName, lastName, username, gender, bio, interests });
+            alert('Signup successful!');
+            navigate('/login'); // Redirect to login page
+        } catch (error) {
+            console.error('Error during sign-up:', error.message);
+            setError('Failed to sign up. Please try again.');
+        }
     };
 
     return (
@@ -50,7 +82,6 @@ const SignupPage = ({ setUserData }) => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <label>Last Name</label>
                     <input
@@ -62,7 +93,6 @@ const SignupPage = ({ setUserData }) => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <label>Username</label>
                     <input
@@ -74,7 +104,6 @@ const SignupPage = ({ setUserData }) => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <label>Email</label>
                     <input
@@ -86,7 +115,17 @@ const SignupPage = ({ setUserData }) => {
                         required
                     />
                 </div>
-
+                <div className="form-group">
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter a password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
                 <div className="form-group">
                     <label>Gender</label>
                     <select name="gender" value={formData.gender} onChange={handleChange} required>
@@ -94,9 +133,9 @@ const SignupPage = ({ setUserData }) => {
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                         <option value="nonbinary">Non-binary</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
-
                 <div className="form-group">
                     <label>Bio</label>
                     <textarea
@@ -107,7 +146,6 @@ const SignupPage = ({ setUserData }) => {
                         rows="4"
                     />
                 </div>
-
                 <div className="form-group">
                     <label>Interests</label>
                     <textarea
@@ -118,6 +156,8 @@ const SignupPage = ({ setUserData }) => {
                         rows="4"
                     />
                 </div>
+
+                {error && <p className="error-message">{error}</p>}
 
                 <button type="submit" className="signup-submit-btn">Sign Up</button>
             </form>

@@ -18,6 +18,14 @@
     margin-bottom: 30px;
 }
 
+/* Button container */
+.landing-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Add space between buttons */
+}
+
 /* Button styling */
 .landing-button {
     background: linear-gradient(135deg, #B832FA, #7F00FF, #001AFF, #00CFFD);
@@ -29,6 +37,8 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 200px; /* Fixed width for buttons */
+    text-align: center;
 }
 
 .landing-button:hover {
