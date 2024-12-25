@@ -28,31 +28,31 @@ const SignupPage = ({ setUserData }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { firstName, lastName, username, email, password, gender, bio, interests } = formData;
-    
+
         try {
             // Sign up the user in Supabase Authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
-    
+
             if (authError) {
                 throw authError;
             }
-    
-            // Wait for the user to be created in the "users" table
-            const userId = authData?.user?.id;
-    
+
+            // Get the user ID from the authentication response
+            const userId = authData.user?.id;
+
             if (!userId) {
-                throw new Error("Failed to retrieve user ID after sign-up.");
+                throw new Error('User ID not returned after authentication.');
             }
-    
-            // Insert additional user data into the 'user_data' table
+
+            // Insert user additional data into the 'user_data' table
             const { error: insertError } = await supabase
                 .from('user_data')
                 .insert([
                     {
-                        id: userId, // Use the ID from the "users" table
+                        id: userId, // Use the ID from the authentication table
                         first_name: firstName,
                         last_name: lastName,
                         username,
@@ -62,11 +62,11 @@ const SignupPage = ({ setUserData }) => {
                         created_at: new Date(),
                     },
                 ]);
-    
+
             if (insertError) {
                 throw insertError;
             }
-    
+
             // Save user data locally and navigate
             setUserData({ email, firstName, lastName, username, gender, bio, interests });
             alert('Signup successful!');
@@ -76,7 +76,6 @@ const SignupPage = ({ setUserData }) => {
             setError('Failed to sign up. Please try again.');
         }
     };
-    
 
     return (
         <div className="signup-container">
