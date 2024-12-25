@@ -30,26 +30,32 @@ const SignupPage = ({ setUserData }) => {
         const { firstName, lastName, username, email, password, gender, bio, interests } = formData;
 
         try {
-            // Sign up user in Supabase Authentication
-            const { data, error } = await supabase.auth.signUp({
+            // Sign up the user in Supabase Authentication
+            const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
 
-            if (error) {
-                throw error;
+            if (authError) {
+                throw authError;
             }
 
-            // Insert user data into the 'users' table
+            // Get the user ID from the authentication response
+            const userId = authData.user.id;
+
+            // Insert user additional data into the 'user_data' table
             const { error: insertError } = await supabase
-                .from('users')
+                .from('user_data')
                 .insert([
                     {
-                        email,
-                        password, // WARNING: Avoid storing plaintext passwords in production
-                        created_at: new Date(),
+                        id: userId, // Use the ID from the authentication table
+                        first_name: firstName,
+                        last_name: lastName,
                         username,
-
+                        gender,
+                        bio,
+                        interests: interests.split(',').map((item) => item.trim()), // Store interests as an array
+                        created_at: new Date(),
                     },
                 ]);
 
