@@ -10,6 +10,7 @@ const SignupPage = ({ setUserData }) => {
         username: '',
         email: '',
         password: '',
+        confirmPassword: '', // Added field for confirm password
         gender: '',
         bio: '',
         interests: '',
@@ -27,22 +28,27 @@ const SignupPage = ({ setUserData }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { firstName, lastName, username, email, password, gender, bio, interests } = formData;
-    
+        const { firstName, lastName, username, email, password, confirmPassword, gender, bio, interests } = formData;
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match. Please try again.');
+            return;
+        }
+
         try {
             // Sign up the user in Supabase Authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
-    
+
             if (authError) {
                 throw authError;
             }
-    
+
             // Get the user ID from the authentication response
             const userId = authData.user.id;
-    
+
             // Insert user data into the 'users' table
             const { error: userInsertError } = await supabase
                 .from('users')
@@ -55,11 +61,11 @@ const SignupPage = ({ setUserData }) => {
                         username,
                     },
                 ]);
-    
+
             if (userInsertError) {
                 throw userInsertError;
             }
-    
+
             // Insert additional user data into the 'user_data' table
             const { error: userDataInsertError } = await supabase
                 .from('user_data')
@@ -75,14 +81,14 @@ const SignupPage = ({ setUserData }) => {
                         created_at: new Date(),
                     },
                 ]);
-    
+
             if (userDataInsertError) {
                 throw userDataInsertError;
             }
-    
+
             // Save user data locally (optional)
             setUserData({ email, firstName, lastName, username, gender, bio, interests });
-    
+
             // Redirect to the questionnaire page
             alert('Signup successful! Let’s complete your questionnaire.');
             navigate('/questionnaire'); // Redirect to the questionnaire page
@@ -91,8 +97,6 @@ const SignupPage = ({ setUserData }) => {
             setError('Failed to sign up. Please try again.');
         }
     };
-    
-    
 
     return (
         <div className="signup-container">
@@ -149,6 +153,17 @@ const SignupPage = ({ setUserData }) => {
                         name="password"
                         placeholder="Enter a password"
                         value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Confirm Password</label>
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
                         onChange={handleChange}
                         required
                     />
