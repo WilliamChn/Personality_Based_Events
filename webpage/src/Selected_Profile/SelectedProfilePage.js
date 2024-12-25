@@ -13,7 +13,7 @@ const SelectedProfilePage = () => {
 
     useEffect(() => {
         // Fetch the sentiment-based resolution strategy
-        fetch("https://pbrm-backend.onrender.com/api/get-results")
+        fetch("https://social-sync-backend.onrender.com/api/get-results")
             .then((res) => {
                 if (!res.ok) throw new Error("Failed to fetch data");
                 return res.json();
