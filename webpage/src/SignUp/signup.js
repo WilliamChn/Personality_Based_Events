@@ -90,7 +90,6 @@ const SignupPage = ({ setUserData }) => {
             setUserData({ email, firstName, lastName, username, gender, bio, interests });
 
             // Redirect to the questionnaire page
-            alert('Signup successful! Let’s complete your questionnaire.');
             navigate('/questionnaire'); // Redirect to the questionnaire page
         } catch (error) {
             console.error('Error during sign-up:', error.message);
