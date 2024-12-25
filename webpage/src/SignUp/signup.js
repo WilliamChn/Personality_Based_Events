@@ -28,45 +28,58 @@ const SignupPage = ({ setUserData }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { firstName, lastName, username, email, password, gender, bio, interests } = formData;
-
+    
         try {
             // Sign up the user in Supabase Authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
-
+    
             if (authError) {
                 throw authError;
             }
-
+    
             // Get the user ID from the authentication response
-            const userId = authData.user?.id;
-
-            if (!userId) {
-                throw new Error('User ID not returned after authentication.');
+            const userId = authData.user.id;
+    
+            // Insert user data into the 'users' table
+            const { error: userInsertError } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        id: userId, // Use the same ID from authentication
+                        email,
+                        password, // WARNING: Avoid storing plaintext passwords in production
+                        created_at: new Date(),
+                        username,
+                    },
+                ]);
+    
+            if (userInsertError) {
+                throw userInsertError;
             }
-
-            // Insert user additional data into the 'user_data' table
-            const { error: insertError } = await supabase
+    
+            // Insert additional user data into the 'user_data' table
+            const { error: userDataInsertError } = await supabase
                 .from('user_data')
                 .insert([
                     {
-                        id: userId, // Use the ID from the authentication table
+                        id: userId, // Use the same ID from authentication
                         first_name: firstName,
                         last_name: lastName,
                         username,
                         gender,
                         bio,
-                        interests: interests.split(',').map((item) => item.trim()), // Store interests as an array
+                        interests: interests.split(',').map((item) => item.trim()), // Convert interests into an array
                         created_at: new Date(),
                     },
                 ]);
-
-            if (insertError) {
-                throw insertError;
+    
+            if (userDataInsertError) {
+                throw userDataInsertError;
             }
-
+    
             // Save user data locally and navigate
             setUserData({ email, firstName, lastName, username, gender, bio, interests });
             alert('Signup successful!');
@@ -76,6 +89,7 @@ const SignupPage = ({ setUserData }) => {
             setError('Failed to sign up. Please try again.');
         }
     };
+    
 
     return (
         <div className="signup-container">
