@@ -80,15 +80,18 @@ const SignupPage = ({ setUserData }) => {
                 throw userDataInsertError;
             }
     
-            // Save user data locally and navigate
+            // Save user data locally (optional)
             setUserData({ email, firstName, lastName, username, gender, bio, interests });
-            alert('Signup successful!');
-            navigate('/login'); // Redirect to login page
+    
+            // Redirect to the questionnaire page
+            alert('Signup successful! Let’s complete your questionnaire.');
+            navigate('/questionnaire'); // Redirect to the questionnaire page
         } catch (error) {
             console.error('Error during sign-up:', error.message);
             setError('Failed to sign up. Please try again.');
         }
     };
+    
     
 
     return (
