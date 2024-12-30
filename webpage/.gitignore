@@ -7,6 +7,8 @@
 backend/node_modules/
 PBRM/node_modules
 /.env
+./package.json
+./package-lock.json
 
 
 # testing
