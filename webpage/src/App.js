@@ -5,8 +5,6 @@ import LoginPage from './Login/login';
 import Questionnaire from './Questionnaire/questionnaire';
 import LandingPage from './Landing_Page/landingpage';
 import ProfilePage from './Profile_Page/profilepage';
-import MatchPage from './Match_Page/matchpage';
-import SelectedProfilePage from './Selected_Profile/SelectedProfilePage';
 import { supabase } from './supabase'; // Import Supabase client
 import './App.css';
 
@@ -67,22 +65,6 @@ function App() {
                                 personalityResult={personalityResult}
                                 setUserCluster={setUserCluster}
                             />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/match"
-                    element={
-                        <ProtectedRoute>
-                            <MatchPage userCluster={userCluster} userProfile={userData} />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/profile/:name"
-                    element={
-                        <ProtectedRoute>
-                            <SelectedProfilePage userProfile={userData} />
                         </ProtectedRoute>
                     }
                 />
