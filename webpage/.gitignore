@@ -6,6 +6,7 @@
 .pnp.js
 backend/node_modules/
 PBRM/node_modules
+/secret.env
 
 
 # testing
