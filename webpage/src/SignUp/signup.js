@@ -41,47 +41,35 @@ const SignupPage = ({ setUserData }) => {
             interests,
             zip,
         } = formData;
-
+    
         if (password !== confirmPassword) {
             setError("Passwords do not match. Please try again.");
             return;
         }
-
+    
         try {
-            // Fetch latitude and longitude using ZIP code
+            // Fetch the city using the ZIP code
             const zipResponse = await fetch(`https://api.zippopotam.us/us/${zip}`);
             if (!zipResponse.ok) {
                 throw new Error("Invalid ZIP code. Unable to fetch location data.");
             }
-
+    
             const zipData = await zipResponse.json();
-            const latitude = zipData.places[0].latitude;
-            const longitude = zipData.places[0].longitude;
-
-            // Fetch the closest major city using IP-API
-            const locationResponse = await fetch(
-                `http://ip-api.com/json/?fields=city,lat,lon`
-            );
-            if (!locationResponse.ok) {
-                throw new Error("Unable to fetch major city.");
-            }
-
-            const locationData = await locationResponse.json();
-            const city = locationData.city; // Extract the major city name
-
+            const city = zipData.places[0]["place name"]; // Extract the city name
+    
             // Sign up the user in Supabase Authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
             });
-
+    
             if (authError) {
                 throw authError;
             }
-
+    
             // Get the user ID from the authentication response
             const userId = authData.user.id;
-
+    
             // Insert user data into the 'users' table
             const { error: userInsertError } = await supabase.from("users").insert([
                 {
@@ -92,11 +80,11 @@ const SignupPage = ({ setUserData }) => {
                     username,
                 },
             ]);
-
+    
             if (userInsertError) {
                 throw userInsertError;
             }
-
+    
             // Insert additional user data into the 'user_data' table
             const { error: userDataInsertError } = await supabase.from("user_data").insert([
                 {
@@ -106,19 +94,19 @@ const SignupPage = ({ setUserData }) => {
                     username,
                     gender,
                     bio,
-                    city, // Save the major city to the database
+                    city, // Save the city to the database
                     interests: interests.split(",").map((item) => item.trim()), // Convert interests into an array
                     created_at: new Date(),
                 },
             ]);
-
+    
             if (userDataInsertError) {
                 throw userDataInsertError;
             }
-
+    
             // Save user data locally (optional)
             setUserData({ email, firstName, lastName, username, gender, bio, city, interests });
-
+    
             // Redirect to the questionnaire page
             navigate("/questionnaire"); // Redirect to the questionnaire page
         } catch (error) {
@@ -126,6 +114,7 @@ const SignupPage = ({ setUserData }) => {
             setError("Failed to sign up. Please try again.");
         }
     };
+    
 
     return (
         <div className="signup-container">
