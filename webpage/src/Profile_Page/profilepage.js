@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./profilepage.css";
 import optimizer from "../images/chill_optimizer.webp";
 import dreamer from "../images/dynamic_dreamer.webp";
 import visionary from "../images/grounded_visionary.png";
 import explorer from "../images/harmonious_explorer.webp";
 import socialite from "../images/zen_socialite.webp";
+import { supabase } from "../supabase"; // Import Supabase client
 
 const ProfilePage = ({ personalityResult, setUserCluster }) => {
     const navigate = useNavigate();
+    const [events, setEvents] = useState([]);
+    const [city, setCity] = useState(""); // Store the user's city
+    const API_KEY = process.env.REACT_APP_TICKETMASTER_API_KEY; // Fetch API key from .env
+
     const personalityClusters = {
         "Zen Socialite": {
             image: socialite,
@@ -19,6 +25,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
                 "Collaborative Scheduling: Encourage shared schedules for cleaning, quiet hours, and social events.",
                 "Clear Boundaries for Social Time: Set agreed times for hosting guests or group activities.",
             ],
+            keywords: "Sports",
         },
         "Chill Optimizer": {
             image: optimizer,
@@ -30,6 +37,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
                 "Direct, Clear Communication: Approach conflicts with actionable steps.",
                 "Respect Alone Time: Value their independence and personal space.",
             ],
+            keywords: "Sports",
         },
         "Dynamic Dreamer": {
             image: dreamer,
@@ -40,6 +48,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
                 "Empathy-Driven Dialogue: Engage in conversations that validate feelings and encourage understanding.",
                 "Encourage Creativity in Solutions: Brainstorm creative ways to address conflicts, such as themed events or unconventional approaches.",
             ],
+            keywords: "Sports",
         },
         "Grounded Visionary": {
             image: visionary,
@@ -50,6 +59,7 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
                 "Structured Problem-Solving: Break down conflicts into manageable steps.",
                 "Focus on Practical Outcomes: Stick to actionable resolutions rather than emotional debates.",
             ],
+            keywords: "Sports",
         },
         "Harmonious Explorer": {
             image: explorer,
@@ -61,78 +71,151 @@ const ProfilePage = ({ personalityResult, setUserCluster }) => {
                 "Teamwork and Compromise: Create win-win situations where everyone feels heard and satisfied.",
                 "Adventurous Problem-Solving: Suggest trying something new to ease tension, like group outings or shared activities.",
             ],
+            keywords: "Sports",
         },
     };
 
-const determineCluster = (result) => {
-    if (!result) return "Zen Socialite"; // Default fallback
+    const determineCluster = (result) => {
+        if (!result) return "Zen Socialite"; // Default fallback
 
-    // Predefined cluster values
-    const clusterValues = {
-        "Zen Socialite": {
-            Extraversion: 2.95,
-            "Emotional Stability": 2.99,
-            Agreeableness: 3.00,
-            Conscientiousness: 2.91,
-            Openness: 2.85,
-        },
-        "Chill Optimizer": {
-            Extraversion: 3.09,
-            "Emotional Stability": 2.48,
-            Agreeableness: 3.20,
-            Conscientiousness: 3.19,
-            Openness: 3.31,
-        },
-        "Dynamic Dreamer": {
-            Extraversion: 3.60,
-            "Emotional Stability": 3.31,
-            Agreeableness: 3.30,
-            Conscientiousness: 3.18,
-            Openness: 3.37,
-        },
-        "Grounded Visionary": {
-            Extraversion: 2.97,
-            "Emotional Stability": 2.77,
-            Agreeableness: 2.92,
-            Conscientiousness: 3.10,
-            Openness: 3.40,
-        },
-        "Harmonious Explorer": {
-            Extraversion: 3.00,
-            "Emotional Stability": 3.55,
-            Agreeableness: 3.22,
-            Conscientiousness: 3.23,
-            Openness: 3.33,
-        },
-    };
+        const clusterValues = {
+            "Zen Socialite": {
+                Extraversion: 2.95,
+                "Emotional Stability": 2.99,
+                Agreeableness: 3.00,
+                Conscientiousness: 2.91,
+                Openness: 2.85,
+            },
+            "Chill Optimizer": {
+                Extraversion: 3.09,
+                "Emotional Stability": 2.48,
+                Agreeableness: 3.20,
+                Conscientiousness: 3.19,
+                Openness: 3.31,
+            },
+            "Dynamic Dreamer": {
+                Extraversion: 3.60,
+                "Emotional Stability": 3.31,
+                Agreeableness: 3.30,
+                Conscientiousness: 3.18,
+                Openness: 3.37,
+            },
+            "Grounded Visionary": {
+                Extraversion: 2.97,
+                "Emotional Stability": 2.77,
+                Agreeableness: 2.92,
+                Conscientiousness: 3.10,
+                Openness: 3.40,
+            },
+            "Harmonious Explorer": {
+                Extraversion: 3.00,
+                "Emotional Stability": 3.55,
+                Agreeableness: 3.22,
+                Conscientiousness: 3.23,
+                Openness: 3.33,
+            },
+        };
 
-    // Calculate Euclidean distance for each cluster
-    const distances = Object.entries(clusterValues).map(([cluster, values]) => {
-        const distance = Math.sqrt(
-            Object.keys(values).reduce((sum, key) => {
-                const diff = result[key] - values[key];
-                return sum + diff * diff;
-            }, 0)
+        const distances = Object.entries(clusterValues).map(([cluster, values]) => {
+            const distance = Math.sqrt(
+                Object.keys(values).reduce((sum, key) => {
+                    const diff = result[key] - values[key];
+                    return sum + diff * diff;
+                }, 0)
+            );
+            return { cluster, distance };
+        });
+
+        const closestCluster = distances.reduce((prev, curr) =>
+            prev.distance < curr.distance ? prev : curr
         );
-        return { cluster, distance };
-    });
-
-    // Log the distances for debugging
-    console.log("Distances to each cluster:", distances);
-
-    // Find the cluster with the smallest distance
-    const closestCluster = distances.reduce((prev, curr) =>
-        prev.distance < curr.distance ? prev : curr
-    );
-
-    console.log("Closest cluster:", closestCluster.cluster);
-    return closestCluster.cluster;
-};
+        return closestCluster.cluster;
+    };
 
     const cluster = determineCluster(personalityResult);
     const clusterDetails = personalityClusters[cluster];
 
-    // Pass cluster to App.js and navigate to MatchPage
+    useEffect(() => {
+        const fetchUserCity = async () => {
+            try {
+                // Get the authenticated user's details
+                const {
+                    data: { user },
+                    error: userError,
+                } = await supabase.auth.getUser();
+
+                if (userError) {
+                    console.error("Error fetching user:", userError.message);
+                    return;
+                }
+
+                const userId = user?.id;
+
+                if (!userId) {
+                    console.error("No user ID found.");
+                    return;
+                }
+
+                // Query the `user_data` table to get the city
+                const { data, error: cityError } = await supabase
+                    .from("user_data")
+                    .select("city")
+                    .eq("id", userId)
+                    .single();
+
+                if (cityError) {
+                    console.error("Error fetching user city:", cityError.message);
+                    return;
+                }
+
+                setCity(data?.city || ""); // Set city or fallback to an empty string
+            } catch (error) {
+                console.error("Error during city fetch:", error.message);
+            }
+        };
+
+        fetchUserCity();
+    }, []); // Empty dependency array ensures this runs only once
+
+    useEffect(() => {
+        console.log("City:", city);
+        console.log("Cluster Keywords:", clusterDetails?.keywords);
+        if (!city || !clusterDetails?.keywords) {
+            console.log("City or keywords not available. Skipping fetch.");
+            return;
+        }
+
+        const fetchEvents = async () => {
+            try {
+                const response = await axios.get(
+                    "https://app.ticketmaster.com/discovery/v2/events.json",
+                    {
+                        params: {
+                            apikey: API_KEY,
+                            keyword: clusterDetails.keywords, // Use the keyword from personality cluster
+                            postalCode: "11378", // Use the user's city
+                            startDateTime: "2024-01-01T00:00:00Z",
+                            endDateTime: "2025-12-31T23:59:59Z",
+                            radius: 10,
+                            unit: "miles", 
+                        },
+                    }
+                );
+
+                if (response.data._embedded && response.data._embedded.events) {
+                    setEvents(response.data._embedded.events);
+                    console.log("Fetched events:", response.data._embedded.events);
+                } else {
+                    console.log("No events found for the given criteria.");
+                }
+            } catch (error) {
+                console.error("Error fetching events:", error.response?.status || error.message);
+            }
+        };
+
+        fetchEvents();
+    }, [city, clusterDetails.keywords]); // Trigger only when `city` or `keywords` change
+
     const handleFindMatchClick = () => {
         setUserCluster(cluster);
         navigate("/match");
@@ -167,6 +250,25 @@ const determineCluster = (result) => {
                 <button className="find-match-button" onClick={handleFindMatchClick}>
                     Find your match!
                 </button>
+            </div>
+            <div className="events-section">
+                <h3>Upcoming Events in {city}</h3>
+                {events.length > 0 ? (
+                    <ul>
+                        {events.map((event, index) => (
+                            <li key={index}>
+                                <strong>{event.name}</strong> <br />
+                                {event.dates.start.localDate} <br />
+                                {event._embedded.venues[0].name} - {event._embedded.venues[0].city.name} <br />
+                                <a href={event.url} target="_blank" rel="noopener noreferrer">
+                                    More Details
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No events available.</p>
+                )}
             </div>
         </div>
     );

@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { supabase } from '../supabase'; // Import your Supabase client
-import { useNavigate } from 'react-router-dom';
-import './signup.css';
+import React, { useState } from "react";
+import { supabase } from "../supabase"; // Import your Supabase client
+import { useNavigate } from "react-router-dom";
+import "./signup.css";
 
 const SignupPage = ({ setUserData }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '', // Added field for confirm password
-        gender: '',
-        bio: '',
-        interests: '',
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        gender: "",
+        bio: "",
+        interests: "",
+        zip: "", // New field for ZIP code
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -28,14 +29,46 @@ const SignupPage = ({ setUserData }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { firstName, lastName, username, email, password, confirmPassword, gender, bio, interests } = formData;
+        const {
+            firstName,
+            lastName,
+            username,
+            email,
+            password,
+            confirmPassword,
+            gender,
+            bio,
+            interests,
+            zip,
+        } = formData;
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match. Please try again.');
+            setError("Passwords do not match. Please try again.");
             return;
         }
 
         try {
+            // Fetch latitude and longitude using ZIP code
+            const zipResponse = await fetch(`https://api.zippopotam.us/us/${zip}`);
+            if (!zipResponse.ok) {
+                throw new Error("Invalid ZIP code. Unable to fetch location data.");
+            }
+
+            const zipData = await zipResponse.json();
+            const latitude = zipData.places[0].latitude;
+            const longitude = zipData.places[0].longitude;
+
+            // Fetch the closest major city using IP-API
+            const locationResponse = await fetch(
+                `http://ip-api.com/json/?fields=city,lat,lon`
+            );
+            if (!locationResponse.ok) {
+                throw new Error("Unable to fetch major city.");
+            }
+
+            const locationData = await locationResponse.json();
+            const city = locationData.city; // Extract the major city name
+
             // Sign up the user in Supabase Authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
@@ -50,50 +83,47 @@ const SignupPage = ({ setUserData }) => {
             const userId = authData.user.id;
 
             // Insert user data into the 'users' table
-            const { error: userInsertError } = await supabase
-                .from('users')
-                .insert([
-                    {
-                        id: userId, // Use the same ID from authentication
-                        email,
-                        password, // WARNING: Avoid storing plaintext passwords in production
-                        created_at: new Date(),
-                        username,
-                    },
-                ]);
+            const { error: userInsertError } = await supabase.from("users").insert([
+                {
+                    id: userId, // Use the same ID from authentication
+                    email,
+                    password, // WARNING: Avoid storing plaintext passwords in production
+                    created_at: new Date(),
+                    username,
+                },
+            ]);
 
             if (userInsertError) {
                 throw userInsertError;
             }
 
             // Insert additional user data into the 'user_data' table
-            const { error: userDataInsertError } = await supabase
-                .from('user_data')
-                .insert([
-                    {
-                        id: userId, // Use the same ID from authentication
-                        first_name: firstName,
-                        last_name: lastName,
-                        username,
-                        gender,
-                        bio,
-                        interests: interests.split(',').map((item) => item.trim()), // Convert interests into an array
-                        created_at: new Date(),
-                    },
-                ]);
+            const { error: userDataInsertError } = await supabase.from("user_data").insert([
+                {
+                    id: userId, // Use the same ID from authentication
+                    first_name: firstName,
+                    last_name: lastName,
+                    username,
+                    gender,
+                    bio,
+                    city, // Save the major city to the database
+                    interests: interests.split(",").map((item) => item.trim()), // Convert interests into an array
+                    created_at: new Date(),
+                },
+            ]);
 
             if (userDataInsertError) {
                 throw userDataInsertError;
             }
 
             // Save user data locally (optional)
-            setUserData({ email, firstName, lastName, username, gender, bio, interests });
+            setUserData({ email, firstName, lastName, username, gender, bio, city, interests });
 
             // Redirect to the questionnaire page
-            navigate('/questionnaire'); // Redirect to the questionnaire page
+            navigate("/questionnaire"); // Redirect to the questionnaire page
         } catch (error) {
-            console.error('Error during sign-up:', error.message);
-            setError('Failed to sign up. Please try again.');
+            console.error("Error during sign-up:", error.message);
+            setError("Failed to sign up. Please try again.");
         }
     };
 
@@ -168,6 +198,17 @@ const SignupPage = ({ setUserData }) => {
                     />
                 </div>
                 <div className="form-group">
+                    <label>ZIP Code</label>
+                    <input
+                        type="text"
+                        name="zip"
+                        placeholder="Enter your ZIP code"
+                        value={formData.zip}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="form-group">
                     <label>Gender</label>
                     <select name="gender" value={formData.gender} onChange={handleChange} required>
                         <option value="">Select Gender</option>
@@ -200,7 +241,9 @@ const SignupPage = ({ setUserData }) => {
 
                 {error && <p className="error-message">{error}</p>}
 
-                <button type="submit" className="signup-submit-btn">Sign Up</button>
+                <button type="submit" className="signup-submit-btn">
+                    Sign Up
+                </button>
             </form>
         </div>
     );
