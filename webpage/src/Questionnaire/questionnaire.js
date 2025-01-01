@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./questionnaire.css";
+import { supabase } from "../supabase"; 
 
 const Questionnaire = ({ setPersonalityResult }) => {
     const [responses, setResponses] = useState({});
@@ -48,38 +49,53 @@ const Questionnaire = ({ setPersonalityResult }) => {
             const traitResponses = Object.keys(responses)
                 .filter((key) => key.startsWith(trait))
                 .map((key) => responses[key]);
-
+    
             const average =
                 traitResponses.reduce((sum, val) => sum + val, 0) / questions[trait].length;
-
+    
             results[trait] = average;
         }
         results.openEnded = responses.openEnded; // Include open-ended response
-        setPersonalityResult(results);
-
-        // Debugging
-        console.log("Final Results:", JSON.stringify(results));
-
-        // Send results to backend
-        try {
-            const res = await fetch("https://social-sync-backend.onrender.com/api/save-results", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(results),
-            });
-
-            if (res.ok) {
-                console.log("Results saved to CSV successfully!");
-            } else {
-                console.error("Failed to save results to backend.");
-            }
-        } catch (error) {
-            console.error("Error saving results:", error);
+    
+        console.log("Final Results:", results);
+    
+        // Get the currently authenticated user's ID
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
+    
+        if (userError || !user) {
+            console.error("Error fetching user:", userError.message);
+            return;
         }
-
-        navigate("/profile");
+    
+        const userId = user.id;
+    
+        // Insert data into the user_personality_data table
+        try {
+            const { error: insertError } = await supabase.from("user_personality_data").insert([
+                {
+                    id: userId,
+                    extraversion: results.Extraversion,
+                    emotional_stability: results["Emotional Stability"],
+                    agreeableness: results.Agreeableness,
+                    conscientiousness: results.Conscientiousness,
+                    openness: results.Openness,
+                    open_ended: results.openEnded,
+                },
+            ]);
+    
+            if (insertError) {
+                throw insertError;
+            }
+    
+            console.log("Results saved to database successfully!");
+        } catch (error) {
+            console.error("Error saving results to database:", error.message);
+        }
+    
+        navigate("/profile"); // Redirect to profile page
     };
 
     return (
