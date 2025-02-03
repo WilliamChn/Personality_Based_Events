@@ -7,7 +7,7 @@ const LandingPage = () => {
 
     return (
         <div className="landing-container">
-            <h1 className="landing-title">Roommate Matcher</h1>
+            <h1 className="landing-title">Social Sync</h1>
             <div className="landing-buttons">
                 <button
                     className="landing-button"
