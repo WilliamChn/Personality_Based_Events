@@ -8,12 +8,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/supabase-js": "^2.50.0",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "react": "^19.0.0",

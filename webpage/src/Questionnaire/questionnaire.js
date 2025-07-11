@@ -45,6 +45,8 @@ const Questionnaire = ({ setPersonalityResult }) => {
 
     const calculateResults = async () => {
         const results = {};
+        
+        // Step 1: Calculate raw trait averages
         for (let trait in questions) {
             const traitResponses = Object.keys(responses)
                 .filter((key) => key.startsWith(trait))
@@ -56,6 +58,65 @@ const Questionnaire = ({ setPersonalityResult }) => {
             results[trait] = average;
         }
         results.openEnded = responses.openEnded; // Include open-ended response
+    
+        console.log("Raw trait averages:", results);
+    
+        // Step 2: Population norms for z-score standardization
+        const populationNorms = {
+            Extraversion: { mean: 3.30, stdDev: 0.70 },
+            Neuroticism: { mean: 2.90, stdDev: 0.75 },
+            Agreeableness: { mean: 3.60, stdDev: 0.60 },
+            Conscientiousness: { mean: 3.40, stdDev: 0.65 },
+            Openness: { mean: 3.70, stdDev: 0.65 }
+        };
+    
+        // Step 3: Convert Emotional Stability to Neuroticism (invert scale)
+        const neuroticism = 5 - results["Emotional Stability"];
+        
+        // Step 4: Calculate z-scores
+        const zScores = {
+            z_E: (results.Extraversion - populationNorms.Extraversion.mean) / populationNorms.Extraversion.stdDev,
+            z_N: (neuroticism - populationNorms.Neuroticism.mean) / populationNorms.Neuroticism.stdDev,
+            z_A: (results.Agreeableness - populationNorms.Agreeableness.mean) / populationNorms.Agreeableness.stdDev,
+            z_C: (results.Conscientiousness - populationNorms.Conscientiousness.mean) / populationNorms.Conscientiousness.stdDev,
+            z_O: (results.Openness - populationNorms.Openness.mean) / populationNorms.Openness.stdDev
+        };
+    
+        console.log("Z-scores:", zScores);
+    
+        // Step 5: GMM cluster centroids
+        const clusterCentroids = {
+            "Reactive Idealist": [0.035, 0.077, -0.063, -0.231, 0.047],
+            "Balanced Realist": [0.047, -0.121, -0.212, 0.113, 0.088],
+            "Sensitive Companion": [-0.058, -0.062, 0.091, 0.082, -0.124],
+            "Secure Optimist": [0.107, -0.217, 0.081, 0.060, -0.098]
+        };
+    
+        // Step 6: Calculate Euclidean distances and find closest cluster
+        const userVector = [zScores.z_E, zScores.z_N, zScores.z_A, zScores.z_C, zScores.z_O];
+        
+        let closestCluster = null;
+        let minDistance = Infinity;
+    
+        for (const [clusterName, centroid] of Object.entries(clusterCentroids)) {
+            // Calculate Euclidean distance
+            const distance = Math.sqrt(
+                centroid.reduce((sum, centroidValue, index) => {
+                    return sum + Math.pow(userVector[index] - centroidValue, 2);
+                }, 0)
+            );
+    
+            console.log(`Distance to ${clusterName}:`, distance);
+    
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestCluster = clusterName;
+            }
+        }
+    
+        // Step 7: Assign personality type
+        const personalityType = closestCluster;
+        console.log("Assigned personality type:", personalityType);
     
         console.log("Final Results:", results);
     
@@ -72,7 +133,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
     
         const userId = user.id;
     
-        // Insert data into the user_personality_data table
+        // Step 8: Insert data into the user_personality_data table
         try {
             const { error: insertError } = await supabase.from("user_personality_data").insert([
                 {
@@ -83,6 +144,13 @@ const Questionnaire = ({ setPersonalityResult }) => {
                     conscientiousness: results.Conscientiousness,
                     openness: results.Openness,
                     open_ended: results.openEnded,
+                    personality_type: personalityType,
+                    z_score_extraversion: zScores.z_E,
+                    z_score_neuroticism: zScores.z_N,
+                    z_score_agreeableness: zScores.z_A,
+                    z_score_conscientiousness: zScores.z_C,
+                    z_score_openness: zScores.z_O,
+                    cluster_distance: minDistance
                 },
             ]);
     
@@ -93,6 +161,16 @@ const Questionnaire = ({ setPersonalityResult }) => {
             console.log("Results saved to database successfully!");
         } catch (error) {
             console.error("Error saving results to database:", error.message);
+        }
+    
+        // Pass the personality type to the parent component if needed
+        if (setPersonalityResult) {
+            setPersonalityResult({
+                ...results,
+                personalityType,
+                zScores,
+                clusterDistance: minDistance
+            });
         }
     
         navigate("/profile"); // Redirect to profile page
@@ -133,7 +211,7 @@ const Questionnaire = ({ setPersonalityResult }) => {
                         ))}
                     </div>
                 ))}
-                <hr class="solid"></hr>
+                <hr className="solid"></hr>
                 <div className="form-group">
                     <label>Tell us about your ideal roommate or living preferences:</label>
                     <textarea
