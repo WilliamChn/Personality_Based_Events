@@ -90,3 +90,64 @@
         font-size: 16px;
     }
 }
+
+/* ----- Events Section Styles ----- */
+.events-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+
+.events-section h2 {
+  margin-bottom: 1rem;
+}
+
+.event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.event-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.event-info {
+  padding: 0.75rem;
+}
+
+.event-name {
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-name:hover {
+  text-decoration: underline;
+}
+
+.event-meta {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.error {
+  color: #c00;
+  font-weight: 600;
+}

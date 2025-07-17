@@ -1,19 +1,36 @@
+// src/pages/ProfilePage.js
 import React, { useEffect, useState } from "react";
-import { supabase } from "../supabase";
-import "./profilepage.css";
+import { supabase } from "../supabase";              // <-- adjust path if needed
+import "./profilepage.css";                          // <-- adjust path if needed
 
-/* ---- cluster images (adapt paths as needed) ---- */
-import reactive from "../images/chill_optimizer.webp";
-import balanced from "../images/dynamic_dreamer.webp";
+/* Cluster images (update paths if different) */
+import reactive  from "../images/chill_optimizer.webp";
+import balanced  from "../images/dynamic_dreamer.webp";
 import sensitive from "../images/zen_socialite.webp";
-import secure from "../images/grounded_visionary.png";
+import secure    from "../images/grounded_visionary.png";
 
+/* Ticketmaster client */
+import { fetchTicketmasterEvents } from "../api/ticketmaster";
+
+/**
+ * ProfilePage
+ * Fetches:
+ *   - current user ZIP (temporarily stored in user_data.city)
+ *   - personality cluster & open-ended response (user_personality_data)
+ * Then loads Ticketmaster events keyed off personality + ZIP and displays them.
+ */
 const ProfilePage = ({ setUserCluster }) => {
-  /* ---------- state ---------- */
+  /* personality + free text */
   const [personalityData, setPersonalityData] = useState(null);
   const [openEndedResponse, setOpenEndedResponse] = useState("");
 
-  /* ---------- cluster dictionary ---------- */
+  /* user ZIP + events */
+  const [userZip, setUserZip] = useState("");
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
+
+  /* cluster lookup */
   const personalityClusters = {
     "Reactive Idealist": {
       image: reactive,
@@ -31,21 +48,45 @@ const ProfilePage = ({ setUserCluster }) => {
       image: sensitive,
       traits: "Supportive • Thoughtful • Introverted",
       description:
-        "Empathetic listeners who value harmony and close-knit connections."
+        "Prefers deeper 1:1 or small group spaces. Loyal and observant."
     },
     "Secure Optimist": {
       image: secure,
-      traits: "Confident • Outgoing • Organized",
+      traits: "Adventurous • Confident • Motivational",
       description:
-        "Positive, energetic, and goal-driven — always ready to explore and lead."
+        "Energized by people and possibility. Loves big ideas and bigger gatherings."
     }
   };
 
-  /* ---------- fetch personality once ---------- */
+  /* fetch logged-in user ZIP (stored in user_data.city for now) */
   useEffect(() => {
-    const fetchPersonality = async () => {
+    (async () => {
+      const { data: { user }, error: userErr } = await supabase.auth.getUser();
+      if (userErr) {
+        console.error("auth getUser error:", userErr);
+        return;
+      }
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("user_data")
+        .select("city") // ← store ZIP here (change to zip if you add that column)
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("fetch user_data error:", error);
+        return;
+      }
+      if (data?.city) setUserZip(String(data.city).trim());
+    })();
+  }, []);
+
+  /* fetch personality data */
+  useEffect(() => {
+    (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user?.id) return console.error("No logged-in user.");
+      if (!user) return;
 
       const { data, error } = await supabase
         .from("user_personality_data")
@@ -53,38 +94,106 @@ const ProfilePage = ({ setUserCluster }) => {
         .eq("id", user.id)
         .single();
 
-      if (error) return console.error("Supabase fetch error:", error.message);
+      if (error) {
+        console.error("fetch personality error:", error.message);
+        return;
+      }
 
       setPersonalityData(data);
       setOpenEndedResponse(data.open_ended || "");
-      setUserCluster?.(data.personality_type); // lift state if parent needs it
-    };
-
-    fetchPersonality();
+      setUserCluster?.(data.personality_type);
+    })();
   }, [setUserCluster]);
 
-  /* ---------- loading guard ---------- */
+  /* fetch events when we have both personality & ZIP */
+  useEffect(() => {
+    if (!personalityData || !userZip) return;
+
+    let cancel = false;
+    (async () => {
+      setEventsLoading(true);
+      setEventsError(null);
+      try {
+        const evts = await fetchTicketmasterEvents(
+          personalityData.personality_type,
+          userZip,
+          25
+        );
+        if (!cancel) setEvents(evts);
+      } catch (err) {
+        if (!cancel) setEventsError(err?.message || "Event load failed");
+      } finally {
+        if (!cancel) setEventsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancel = true;
+    };
+  }, [personalityData, userZip]);
+
+  /* guard while loading personality */
   if (!personalityData) return <div>Loading...</div>;
 
   const cluster = personalityData.personality_type || "Balanced Realist";
-  const detail = personalityClusters[cluster] || personalityClusters["Balanced Realist"];
+  const detail =
+    personalityClusters[cluster] || personalityClusters["Balanced Realist"];
 
-  /* ---------- render ---------- */
   return (
     <div className="profile-container">
-      <div className="leftside">
-        <h1>Your Personality Cluster: {cluster}</h1>
+      {/* top cluster card */}
+      <div className="headercard">
         <img src={detail.image} alt={cluster} />
-        <h3>Open-Ended Response</h3>
+        <h2>{cluster}</h2>
+      </div>
+
+      {/* left: user words */}
+      <div className="leftside">
+        <h3>Your Words</h3>
         <p>{openEndedResponse}</p>
       </div>
 
+      {/* right: traits + description */}
       <div className="rightside">
         <h3>Key Traits</h3>
         <p>{detail.traits}</p>
 
         <h3>Description</h3>
         <p>{detail.description}</p>
+      </div>
+
+      {/* events */}
+      <div className="events-section">
+        <h2>Events near {userZip || "you"}</h2>
+        {eventsLoading && <p>Loading events…</p>}
+        {eventsError && <p className="error">{eventsError}</p>}
+        {!eventsLoading && !eventsError && events.length === 0 && (
+          <p>No matching local events found. (We widen the search and then show virtual events.)</p>
+        )}
+        <ul className="event-list">
+          {events.map(evt => (
+            <li key={evt.id} className="event-card">
+              {evt.imageUrl && (
+                <img src={evt.imageUrl} alt={evt.name} className="event-img" />
+              )}
+              <div className="event-info">
+                <a
+                  href={evt.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="event-name"
+                >
+                  {evt.name}
+                </a>
+                <p className="event-meta">
+                  {evt.date}
+                  {evt.venueName ? ` • ${evt.venueName}` : ""}
+                  {evt.venueCity ? ` • ${evt.venueCity}` : ""}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
