@@ -149,7 +149,9 @@ const ProfilePage = ({ setUserCluster }) => {
 
       {/* left: user words */}
       <div className="leftside">
-        <h3>Your Words</h3>
+        <h1>Your Personality Cluster: {cluster}</h1>
+        <img src={detail.image} alt={cluster} />
+        <h3>Open-Ended Response</h3>
         <p>{openEndedResponse}</p>
       </div>
 
