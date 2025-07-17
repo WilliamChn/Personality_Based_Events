@@ -12,10 +12,10 @@ const RADII_MI = [15, 30, 60, 120, 250];
 
 // Map personality cluster → keyword pipe
 const keywordPipes = {
-  "Reactive Idealist": "open mic|art|indie|poetry|comedy|creative|workshop",
-  "Balanced Realist": "networking|career|business|panel|meetup|professional",
-  "Sensitive Companion": "wellness|support group|book club|meditation|community",
-  "Secure Optimist": "festival|concert|leadership|summit|outdoor|fitness|gala"
+  "Reactive Idealist": "Music",
+  "Balanced Realist": "Music",
+  "Sensitive Companion": "Music",
+  "Secure Optimist": "Music"
 };
 
 // Normalize Ticketmaster event object → small UI-friendly shape
