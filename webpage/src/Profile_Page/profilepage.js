@@ -141,11 +141,6 @@ const ProfilePage = ({ setUserCluster }) => {
 
   return (
     <div className="profile-container">
-      {/* top cluster card */}
-      <div className="headercard">
-        <img src={detail.image} alt={cluster} />
-        <h2>{cluster}</h2>
-      </div>
 
       {/* left: user words */}
       <div className="leftside">
