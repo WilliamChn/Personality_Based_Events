@@ -36,25 +36,25 @@ const ProfilePage = ({ setUserCluster }) => {
       image: reactive,
       traits: "Expressive • Imaginative • Spontaneous",
       description:
-        "Creative, people-oriented, sometimes a bit scattered but full of fresh ideas."
+        " You thrive on possibility. Bursting with ideas, you see patterns and connections others miss, and you’re quick to turn sparks of inspiration into action. Friends value your ability to bring color and energy into their lives — you’re often the one suggesting adventures, brainstorming late into the night, or offering fresh perspectives on old problems. At times, your enthusiasm can scatter your focus, but that same openness makes you adaptable and full of surprises. Whether through art, conversation, or creative projects, you shine brightest when you’re free to explore and share your imagination."
     },
     "Balanced Realist": {
       image: balanced,
       traits: "Practical • Steady • Mildly Social",
       description:
-        "Grounded and dependable with a dash of curiosity. Keeps projects (and friends) on track."
+        "You’re grounded and steady, the kind of person who keeps both feet on the ground even when everyone else is chasing wild ideas. People turn to you because you balance curiosity with common sense — you’re adventurous enough to try new things, but wise enough to know your limits. In groups, you’re the quiet force of stability: reliable, thoughtful, and always willing to lend a hand. You might not chase the spotlight, but you’re the anchor that keeps projects (and friendships) on track. Your strength lies in knowing when to step forward and when to support from behind."
     },
     "Sensitive Companion": {
       image: sensitive,
       traits: "Supportive • Thoughtful • Introverted",
       description:
-        "Prefers deeper 1:1 or small group spaces. Loyal and observant."
+        "You lead with empathy. Deeply attuned to others, you notice the small things — a friend’s shift in mood, the unsaid worries in their voice. People often feel safe opening up to you because they know you’ll listen without judgment. You value loyalty, closeness, and meaningful bonds over surface-level connections. At times, your sensitivity can leave you feeling overwhelmed, but it also gives you the gift of creating warmth wherever you go. Whether through one-on-one talks, quiet creativity, or simply being present, you remind others that kindness and understanding matter."
     },
     "Secure Optimist": {
       image: secure,
       traits: "Adventurous • Confident • Motivational",
       description:
-        "Energized by people and possibility. Loves big ideas and bigger gatherings."
+        "You approach life with energy and enthusiasm. Naturally upbeat, you’re the friend rallying everyone for a night out, the teammate setting ambitious goals, or the planner who somehow makes everything run smoothly. Challenges don’t discourage you — they motivate you, and your optimism inspires others to keep going too. Structure and clarity help you thrive, and you take pride in turning ideas into reality. While your drive can sometimes push you to take on too much, your confidence and positivity make you a natural motivator. You see life not just as something to be managed, but as an adventure to be embraced."
     }
   };
 
